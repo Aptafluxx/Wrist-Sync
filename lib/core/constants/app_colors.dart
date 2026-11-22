@@ -7,6 +7,10 @@ class AppColors {
   static const Color cardColor = Colors.white;
   static const Color textPrimary = Color(0xFF1B263B);
   static const Color textSecondary = Color(0xFF778DA9);
+  static const Color darkBackground = Color(0xFF091522);
+  static const Color darkSurface = Color(0xFF122333);
+  static const Color darkTextPrimary = Color(0xFFEAF4FF);
+  static const Color darkTextSecondary = Color(0xFF9BAFC1);
 
   static const Color borderEnabled = Color(0xFFE0E0E0);
   static const Color borderFocused = Color(0xFF00E5FF);

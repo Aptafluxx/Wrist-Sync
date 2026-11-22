@@ -15,6 +15,8 @@ void main() async {
     GetMaterialApp(
       title: 'WristSync',
       theme: AppTheme.appTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
       debugShowCheckedModeBanner: false,
