@@ -6,11 +6,14 @@ import 'package:wrist_sync/core/widgets/app_snackbar.dart';
 
 import '../utils/permission_manager.dart';
 
+enum BleScanIssue { permissionsDenied, bluetoothOff, scanFailed }
+
 class BleService extends GetxService {
   // Reactive UI States
   final RxBool isBluetoothOn = false.obs;
   final RxBool isScanning = false.obs;
   final RxList<ScanResult> scanResults = <ScanResult>[].obs;
+  final Rxn<BleScanIssue> scanIssue = Rxn<BleScanIssue>();
 
   // Active Connection States
   final Rx<BluetoothDevice?> connectedDevice = Rx<BluetoothDevice?>(null);
@@ -50,17 +53,21 @@ class BleService extends GetxService {
   }
 
   Future<void> startScan({String? deviceTypeFilter}) async {
+    scanIssue.value = null;
+
     // Validate hardware readiness before hitting native APIs
     bool hasPermissions = await PermissionManager.requestBlePermissions();
     if (!hasPermissions) {
+      scanIssue.value = BleScanIssue.permissionsDenied;
       AppSnackbar.showError(
         title: 'Permissions Required',
-        message: 'Location and Nearby Devices must be granted.',
+        message: 'Allow nearby-device access in WristSync settings to scan.',
       );
       return;
     }
 
     if (!isBluetoothOn.value) {
+      scanIssue.value = BleScanIssue.bluetoothOff;
       AppSnackbar.showError(
         title: 'Bluetooth is Off',
         message: 'Turn on Bluetooth before scanning.',
@@ -95,6 +102,7 @@ class BleService extends GetxService {
     try {
       await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
     } catch (e) {
+      scanIssue.value = BleScanIssue.scanFailed;
       AppSnackbar.showError(
         title: 'Failed to Scan',
         message: 'Could not initialize the Bluetooth radio.',

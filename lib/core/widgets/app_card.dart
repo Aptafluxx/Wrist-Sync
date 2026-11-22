@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wrist_sync/core/constants/home_design.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
@@ -17,21 +18,18 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? theme.colorScheme.surface, 
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          // Inherit the global border color you defined for TextFields
-          color: theme.inputDecorationTheme.enabledBorder?.borderSide.color ?? Colors.grey.shade300,
-        ),
+        color: backgroundColor ?? theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(HomeDesign.cardRadius),
+        boxShadow: HomeDesign.cardShadows,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(HomeDesign.cardRadius),
           child: Padding(
             padding: padding ?? const EdgeInsets.all(16.0),
             child: child,

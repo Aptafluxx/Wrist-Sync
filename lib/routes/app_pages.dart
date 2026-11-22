@@ -3,14 +3,18 @@ import 'package:wrist_sync/features/device_info/bindings/device_info_binding.dar
 import 'package:wrist_sync/features/device_info/views/device_info_view.dart';
 import 'package:wrist_sync/features/home/bindings/home_binding.dart';
 import 'package:wrist_sync/features/home/view/home_view.dart';
+import 'package:wrist_sync/features/help/view/help_view.dart';
+import 'package:wrist_sync/features/my_watches/view/my_watches_view.dart';
 import 'package:wrist_sync/features/onboarding/controller/onboarding_controller.dart';
 import 'package:wrist_sync/features/onboarding/view/onboarding_view.dart';
 import 'package:wrist_sync/features/scan/bindings/scan_binding.dart';
 import 'package:wrist_sync/features/scan/view/scan_view.dart';
+import 'package:wrist_sync/features/settings/view/settings_view.dart';
 import 'package:wrist_sync/features/selection/binding/selection_binding.dart';
 import 'package:wrist_sync/features/selection/view/selection_view.dart';
 import 'package:wrist_sync/features/splash/controller/splash_controller.dart';
 import 'package:wrist_sync/features/splash/view/splash_view.dart';
+import 'package:wrist_sync/features/watch_faces/view/watch_faces_view.dart';
 
 import 'app_routes.dart';
 
@@ -35,6 +39,10 @@ class AppPages {
       page: () => const HomeView(),
       binding: HomeBinding(),
     ),
+    GetPage(name: AppRoutes.myWatches, page: () => const MyWatchesView()),
+    GetPage(name: AppRoutes.watchFaces, page: () => const WatchFacesView()),
+    GetPage(name: AppRoutes.settings, page: () => const SettingsView()),
+    GetPage(name: AppRoutes.help, page: () => const HelpView()),
     GetPage(
       name: AppRoutes.selection,
       page: () => const SelectionView(),

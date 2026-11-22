@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wrist_sync/core/widgets/app_button.dart';
+import 'package:wrist_sync/core/constants/home_design.dart';
 import 'package:wrist_sync/core/widgets/app_header.dart';
 import 'package:wrist_sync/features/selection/controller/selection_controller.dart';
 
@@ -19,48 +19,62 @@ class SelectionView extends GetView<SelectionController> {
       appBar: const AppHeader(title: 'Choose Your Watch'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const .symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
           child: Column(
-            crossAxisAlignment: .center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 30),
+              Text(
+                'Start with your watch type',
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'We’ll scan for nearby Bluetooth watches next.',
+                style: textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
               AppCard(
-                padding: const .all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: .start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.watch, color: theme.colorScheme.primary),
+                        Icon(
+                          Icons.watch_rounded,
+                          color: theme.colorScheme.primary,
+                        ),
                         const SizedBox(width: 10),
-                        Text('Select Your Watch', style: textTheme.titleMedium),
+                        Text('Choose a category', style: textTheme.titleMedium),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Choose your smartwatch brand to continue pairing',
-                      style: textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     _buildDeviceRow(
                       context,
                       icon: Icons.watch_outlined,
-                      title: 'Smart Watches',
-                      subtitle: 'Connect Wrist Sync Smart Watch and other Huawei smartwatches.',
+                      title: 'WristSync & Huawei',
+                      subtitle: 'Look for WristSync watches and compatible Huawei devices.',
                       onTap: () => controller.selectDeviceType('smart_watch'),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     _buildDeviceRow(
                       context,
                       icon: Icons.watch_later_outlined,
-                      title: 'Other Watches',
-                      subtitle: 'Connect compatible Bluetooth smartwatches from other brands.',
+                      title: 'Other Bluetooth watches',
+                      subtitle:
+                          'Scan for compatible watches from other brands.',
                       onTap: () => controller.selectDeviceType('other_watch'),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Both options use the same nearby-device scan. Choose the closest match for setup guidance.',
+                      style: textTheme.bodySmall,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -82,23 +96,22 @@ class SelectionView extends GetView<SelectionController> {
       onTap: onTap,
       backgroundColor: theme.scaffoldBackgroundColor,
       child: Column(
-        crossAxisAlignment: .start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               AppIconBadge(
                 icon: icon,
-                backgroundColor: theme.colorScheme.primary,
-                iconColor: theme.colorScheme.secondary,
+                backgroundColor: HomeDesign.cyan.withValues(alpha: 0.15),
+                iconColor: theme.colorScheme.primary,
               ),
               const SizedBox(width: 12),
-              Text(title, style: textTheme.titleMedium),
+              Expanded(child: Text(title, style: textTheme.titleMedium)),
+              const Icon(Icons.chevron_right_rounded),
             ],
           ),
           const SizedBox(height: 12),
           Text(subtitle, style: textTheme.bodyMedium?.copyWith(height: 1.3)),
-          const SizedBox(height: 16),
-          AppButton(text: "Continue >", onPressed: onTap),
         ],
       ),
     );

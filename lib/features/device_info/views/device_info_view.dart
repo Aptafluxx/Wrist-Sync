@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wrist_sync/core/constants/home_design.dart';
 import 'package:wrist_sync/features/device_info/controller/device_info_controller.dart';
+import 'package:wrist_sync/routes/app_routes.dart';
 
 import '../../../core/widgets/app_header.dart';
 import '../../../core/widgets/app_card.dart';
@@ -16,7 +18,41 @@ class DeviceInfoView extends GetView<DeviceInfoController> {
     final device = controller.bleService.connectedDevice.value;
 
     if (device == null) {
-      return const Scaffold(body: Center(child: Text('No device connected.')));
+      return Scaffold(
+        appBar: const AppHeader(title: 'Device Details'),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.watch_off_rounded,
+                    size: 56,
+                    color: theme.brightness == Brightness.dark
+                        ? HomeDesign.cyan
+                        : HomeDesign.teal,
+                  ),
+                  const SizedBox(height: 16),
+                  Text('No watch connected', style: theme.textTheme.titleLarge),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Connect a watch to view its details.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 20),
+                  AppButton(
+                    text: 'Find a watch',
+                    onPressed: () => Get.toNamed(AppRoutes.selection),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     final deviceName = device.platformName.isNotEmpty
@@ -45,12 +81,13 @@ class DeviceInfoView extends GetView<DeviceInfoController> {
                     const SizedBox(height: 12),
 
                     // Consumer Section: Clean Status and Battery Badges
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 12,
+                      runSpacing: 8,
                       children: [
-                        _buildStatusBadge(),
-                        const SizedBox(width: 12),
-                        _buildBatteryBadge(),
+                        _buildStatusBadge(context),
+                        _buildBatteryBadge(context),
                       ],
                     ),
                     const SizedBox(height: 32),
@@ -106,7 +143,7 @@ class DeviceInfoView extends GetView<DeviceInfoController> {
                                 'GATT Services',
                                 controller.isDiscovering.value
                                     ? 'Discovering...'
-                                    : '${controller.services.length} active channels',
+                                    : '${controller.services.length} services',
                               ),
                             ),
                           ],
@@ -132,25 +169,29 @@ class DeviceInfoView extends GetView<DeviceInfoController> {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.brightness == Brightness.dark
+        ? const Color(0xFF8BE0B1)
+        : const Color(0xFF187A4A);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.bluetooth_connected, color: Colors.green, size: 16),
-          SizedBox(width: 6),
+          Icon(Icons.bluetooth_connected, color: color, size: 16),
+          const SizedBox(width: 6),
           Text(
             'Connected',
-            style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -158,27 +199,27 @@ class DeviceInfoView extends GetView<DeviceInfoController> {
     );
   }
 
-  Widget _buildBatteryBadge() {
-    // Note: Fetching real battery via BLE requires subscribing to a specific GATT Battery Service UUID.
-    // For a UI assessment, a static placeholder is standard practice unless explicitly requested.
+  Widget _buildBatteryBadge(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onSurface.withValues(alpha: 0.72);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.blue.withValues(alpha: 0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.blue.withValues(alpha: 0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.battery_charging_full, color: Colors.blue, size: 16),
-          SizedBox(width: 6),
+          Icon(Icons.battery_unknown_rounded, color: color, size: 16),
+          const SizedBox(width: 6),
           Text(
-            '85%',
-            style: TextStyle(
-              color: Colors.blue,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
+            'Battery unavailable',
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -197,10 +238,15 @@ class DeviceInfoView extends GetView<DeviceInfoController> {
             color: theme.disabledColor,
           ),
         ),
-        Text(
-          value,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+        Flexible(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],

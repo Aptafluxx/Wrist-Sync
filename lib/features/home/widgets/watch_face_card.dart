@@ -20,6 +20,39 @@ class WatchFaceData {
   final Color accent;
 }
 
+const watchFaceCatalog = [
+  WatchFaceData(
+    name: 'Midnight',
+    style: WatchFaceStyle.analog,
+    background: Color(0xFF101D32),
+    accent: Color(0xFF53E3F3),
+  ),
+  WatchFaceData(
+    name: 'Aurora',
+    style: WatchFaceStyle.digital,
+    background: Color(0xFF252052),
+    accent: Color(0xFFB6A8FF),
+  ),
+  WatchFaceData(
+    name: 'Minimal',
+    style: WatchFaceStyle.minimal,
+    background: Color(0xFF183D3E),
+    accent: Color(0xFF8BF0D0),
+  ),
+  WatchFaceData(
+    name: 'Pulse',
+    style: WatchFaceStyle.analog,
+    background: Color(0xFF432C42),
+    accent: Color(0xFFFF9DAD),
+  ),
+  WatchFaceData(
+    name: 'Orbit',
+    style: WatchFaceStyle.digital,
+    background: Color(0xFF26384B),
+    accent: Color(0xFFFFD27A),
+  ),
+];
+
 class WatchFaceCard extends StatelessWidget {
   const WatchFaceCard({super.key, required this.face, required this.onTap});
 

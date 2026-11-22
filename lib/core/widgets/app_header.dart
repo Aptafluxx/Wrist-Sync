@@ -19,7 +19,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: theme.scaffoldBackgroundColor,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
+      titleSpacing: 0,
       leading: showBackButton
           ? IconButton(
               icon: Icon(
@@ -30,7 +32,14 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () => Get.back(),
             )
           : null,
-      title: Text(title, style: theme.textTheme.headlineSmall),
+      title: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+      ),
       actions: actions,
     );
   }

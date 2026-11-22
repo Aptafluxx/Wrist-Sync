@@ -63,9 +63,14 @@ class AppBottomBar extends StatelessWidget {
   }
 
   void _activateDestination(int index) {
-    if (index == 2) {
-      Get.toNamed(AppRoutes.selection);
-    }
+    final destination = switch (index) {
+      0 => AppRoutes.home,
+      1 => AppRoutes.watchFaces,
+      2 => AppRoutes.myWatches,
+      3 => AppRoutes.settings,
+      _ => AppRoutes.home,
+    };
+    if (Get.currentRoute != destination) Get.offAllNamed(destination);
   }
 }
 
@@ -83,7 +88,9 @@ class _BottomBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final selectedColor = const Color(0xFF0AAFC0);
+    final selectedColor = theme.brightness == Brightness.dark
+        ? const Color(0xFF53E3F3)
+        : const Color(0xFF087F8C);
     final idleColor = theme.colorScheme.onSurface.withValues(alpha: 0.52);
 
     return PressScale(

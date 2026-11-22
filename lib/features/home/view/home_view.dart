@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:wrist_sync/core/services/ble_service.dart';
@@ -16,9 +17,17 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(child: _HomeBody(controller: controller)),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: (isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark)
+            .copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent,
+            ),
+        child: SafeArea(child: _HomeBody(controller: controller)),
+      ),
       bottomNavigationBar: const AppBottomBar(selectedIndex: 0),
     );
   }
@@ -78,16 +87,7 @@ class _HomeBodyState extends State<_HomeBody>
                 end: 0.58,
                 child: Row(
                   children: [
-                    Expanded(
-                      child: QuickActionCard(
-                        title: 'My Watches',
-                        detail: 'View and manage',
-                        badge: '0 devices',
-                        icon: Icons.watch_rounded,
-                        colors: const [Color(0xFF16B8D4), Color(0xFF1687A6)],
-                        onTap: () {},
-                      ),
-                    ),
+                    Expanded(child: _myWatchesAction(controller)),
                     const SizedBox(width: 14),
                     Expanded(
                       child: QuickActionCard(
@@ -96,7 +96,7 @@ class _HomeBodyState extends State<_HomeBody>
                         badge: 'New',
                         icon: Icons.palette_rounded,
                         colors: const [Color(0xFF8974F8), Color(0xFF6251C9)],
-                        onTap: () {},
+                        onTap: controller.navigateToWatchFaces,
                       ),
                     ),
                   ],
@@ -106,7 +106,9 @@ class _HomeBodyState extends State<_HomeBody>
               _animatedSection(
                 start: 0.24,
                 end: 0.68,
-                child: _FeaturedFacesSection(onSeeAll: () {}),
+                child: _FeaturedFacesSection(
+                  onSeeAll: controller.navigateToWatchFaces,
+                ),
               ),
               const SizedBox(height: 28),
               _animatedSection(
@@ -118,7 +120,7 @@ class _HomeBodyState extends State<_HomeBody>
               _animatedSection(
                 start: 0.4,
                 end: 0.9,
-                child: HelpTile(onTap: () {}),
+                child: HelpTile(onTap: controller.navigateToHelp),
               ),
             ],
           ),
@@ -144,6 +146,28 @@ class _HomeBodyState extends State<_HomeBody>
           end: Offset.zero,
         ).animate(animation),
         child: child,
+      ),
+    );
+  }
+
+  Widget _myWatchesAction(HomeController controller) {
+    QuickActionCard buildCard(String badge) => QuickActionCard(
+      title: 'My Watches',
+      detail: 'View and manage',
+      badge: badge,
+      icon: Icons.watch_rounded,
+      colors: const [Color(0xFF16B8D4), Color(0xFF1687A6)],
+      onTap: controller.navigateToMyWatches,
+    );
+
+    if (!Get.isRegistered<BleService>()) return buildCard('0 devices');
+
+    final bleService = Get.find<BleService>();
+    return Obx(
+      () => buildCard(
+        bleService.connectionState.value == BluetoothConnectionState.connected
+            ? '1 device'
+            : '0 devices',
       ),
     );
   }
@@ -232,42 +256,10 @@ class _FeaturedFacesSection extends StatelessWidget {
 
   final VoidCallback onSeeAll;
 
-  static const _faces = [
-    WatchFaceData(
-      name: 'Midnight',
-      style: WatchFaceStyle.analog,
-      background: Color(0xFF101D32),
-      accent: Color(0xFF53E3F3),
-    ),
-    WatchFaceData(
-      name: 'Aurora',
-      style: WatchFaceStyle.digital,
-      background: Color(0xFF252052),
-      accent: Color(0xFFB6A8FF),
-    ),
-    WatchFaceData(
-      name: 'Minimal',
-      style: WatchFaceStyle.minimal,
-      background: Color(0xFF183D3E),
-      accent: Color(0xFF8BF0D0),
-    ),
-    WatchFaceData(
-      name: 'Pulse',
-      style: WatchFaceStyle.analog,
-      background: Color(0xFF432C42),
-      accent: Color(0xFFFF9DAD),
-    ),
-    WatchFaceData(
-      name: 'Orbit',
-      style: WatchFaceStyle.digital,
-      background: Color(0xFF26384B),
-      accent: Color(0xFFFFD27A),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,7 +272,9 @@ class _FeaturedFacesSection extends StatelessWidget {
             TextButton(
               onPressed: onSeeAll,
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF08AFC3),
+                foregroundColor: theme.brightness == Brightness.dark
+                    ? const Color(0xFF53E3F3)
+                    : const Color(0xFF0B5961),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
               child: const Text('See all'),
@@ -293,10 +287,10 @@ class _FeaturedFacesSection extends StatelessWidget {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            itemCount: _faces.length,
+            itemCount: watchFaceCatalog.length,
             separatorBuilder: (context, index) => const SizedBox(width: 12),
             itemBuilder: (context, index) =>
-                WatchFaceCard(face: _faces[index], onTap: onSeeAll),
+                WatchFaceCard(face: watchFaceCatalog[index], onTap: onSeeAll),
           ),
         ),
       ],
